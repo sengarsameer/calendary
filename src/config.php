@@ -22,18 +22,18 @@ $apiConfig = array(
     'use_objects' => false,
   
     // The application_name is included in the User-Agent HTTP header.
-    'application_name' => '',
+    'application_name' => 'calendary',
 
     // OAuth2 Settings, you can get these keys at https://code.google.com/apis/console
-    'oauth2_client_id' => '',
-    'oauth2_client_secret' => '',
-    'oauth2_redirect_uri' => '',
+    'oauth2_client_id' => '197822109231-7tg5mtqa6a1jrg5he9nuuqq6u1hhgait.apps.googleusercontent.com',
+    'oauth2_client_secret' => 'FBzFFeQzC3T4nY6gRXCUa2rC',
+    'oauth2_redirect_uri' => 'http://localhost/calendary/rdata.php',
 
     // The developer key, you get this at https://code.google.com/apis/console
-    'developer_key' => '',
+    'developer_key' => 'AIzaSyDN5qSixJNvBkN280XXOQ-nTfvEZDDr6Yo',
   
     // Site name to show in the Google's OAuth 1 authentication screen.
-    'site_name' => 'www.example.org',
+    'site_name' => 'calendary',
 
     // Which Authentication, Storage and HTTP IO classes to use.
     'authClass'    => 'Google_OAuth2',

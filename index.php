@@ -1,4 +1,27 @@
-<!DOCTYPE html>
+<?php
+    include ('config.php'); 
+    require_once 'src/Google_Client.php';
+    require_once 'src/contrib/Google_Oauth2Service.php';
+
+$gClient = new Google_Client();
+$gClient->setApplicationName('calendary');
+$gClient->setClientId($client_id);
+$gClient->setClientSecret($client_secret);
+$gClient->setRedirectUri($redirect_url);
+$gClient->setDeveloperKey($dev_key);
+$gClient->setScopes(array('https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.readonly'));
+
+$google_oauthV2 = new Google_Oauth2Service($gClient);
+
+if (isset($_REQUEST['reset'])) 
+{
+  unset($_SESSION['token']);
+  $gClient->revokeToken();
+  header('Location: ' . filter_var($redirect_url, FILTER_SANITIZE_URL));
+}
+//get google login url
+$authUrl = $gClient->createAuthUrl();
+?>
 <html lang="en">
 
 <head>
@@ -63,7 +86,7 @@
             <div class="header-content-inner">
                 <h1>Dramatically Engage</h1>
                 <p>Objectively innovate empowered humans whereas parallel platforms.</p>
-                <a href="#" class="btn btn-primary btn-lg">Google Login</a>
+                <a href="<?php echo $authUrl;?>" class="btn btn-primary btn-lg">Google Login</a>
             </div>
         </div>
     </header>
