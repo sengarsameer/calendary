@@ -28,6 +28,7 @@ $authUrl = $gClient->createAuthUrl();
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="mQNUsalt9RO6QoTuLKVMveLAnfbLC0KDFTbxKFBE7Fc" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Calendary</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">

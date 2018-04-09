@@ -1,7 +1,7 @@
 <?php
 include ('config.php'); 
 require_once 'src/Google_Client.php';
-require_once 'src/contrib/Google_Oauth2Service.php';
+//require_once 'src/contrib/Google_Oauth2Service.php';
 require_once 'src/contrib/Google_CalendarService.php';
 session_start();
 $gClient = new Google_Client();
@@ -12,7 +12,7 @@ $gClient->setRedirectUri($redirect_url);
 $gClient->setDeveloperKey($dev_key);
 $gClient->setScopes(array('https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.readonly'));
 
-$google_oauthV2 = new Google_Oauth2Service($gClient);
+//$google_oauthV2 = new Google_Oauth2Service($gClient);
 //$acc_token=$gClient->getAccessToken();
 if (isset($_GET['code'])) 
 { 
@@ -28,42 +28,27 @@ if (isset($_SESSION['token']))
 }
 
 if ($gClient->getAccessToken()) 
-{	
+{	echo $gClient->getAccessToken();
 	//$gClient->setAccessToken($acc_token);
 	$cal = new Google_CalendarService($gClient);
 	$calendarList  = $cal->calendarList->listCalendarList();;
-	echo '<pre>'; print_r($calendarList); echo '</pre>';
-	while(true) {
-		foreach ($calendarList->getItems() as $calendarListEntry) {
-
-			echo $calendarListEntry->getSummary()."\n";
+	//echo '<pre>'; print_r($calendarList); echo '</pre>';
+		foreach ($calendarList['items'] as $calendarListEntry) {
+			echo '<pre>'; print_r($calendarListEntry); echo '</pre>';
+			echo 'this is: '.$calendarListEntry['summary']." :ends</br>";
 
 
 			// get events 
-			$events = $service->events->listEvents($calendarListEntry->id);
+			$events = $cal->events->listEvents('14bcs041@smvdu.ac.in');
 
 
-			foreach ($events->getItems() as $event) {
-			    echo "-----".$event->getSummary()." ";
+			foreach ($events['items'] as $event) {
+				echo '<pre>'; print_r($event); echo '</pre>';
+			    echo "-----".$event['summary']." ";
 			}
-		}
-		$pageToken = $calendarList->getNextPageToken();
-		if ($pageToken) {
-			$optParams = array('pageToken' => $pageToken);
-			$calendarList = $service->calendarList->listCalendarList($optParams);
-		} else {
 			break;
 		}
-	}
 	  //Get user details if user is logged in
-      $user 				= $google_oauthV2->userinfo->get();
-      echo '<pre>'; print_r($user); echo '</pre>';
-	  $user_id 				= $user['id'];
-	  $user_name 			= filter_var($user['name'], FILTER_SANITIZE_SPECIAL_CHARS);
-	  $email 				= filter_var($user['email'], FILTER_SANITIZE_EMAIL);
-	  $profile_url 			= filter_var($user['link'], FILTER_VALIDATE_URL);
-	  $profile_image_url 	= filter_var($user['picture'], FILTER_VALIDATE_URL);
-	  $personMarkup 		= "$email<div><img src='$profile_image_url?sz=50'></div>";
 	  $_SESSION['token'] 	= $gClient->getAccessToken();
 }
 else 
