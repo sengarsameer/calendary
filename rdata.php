@@ -1,5 +1,6 @@
 <?php
 include ('config.php'); 
+include ('fun.php'); 
 require_once 'src/Google_Client.php';
 //require_once 'src/contrib/Google_Oauth2Service.php';
 require_once 'src/contrib/Google_CalendarService.php';
@@ -28,26 +29,15 @@ if (isset($_SESSION['token']))
 }
 
 if ($gClient->getAccessToken()) 
-{	echo $gClient->getAccessToken();
+{	
 	//$gClient->setAccessToken($acc_token);
 	$cal = new Google_CalendarService($gClient);
-	$calendarList  = $cal->calendarList->listCalendarList();;
+	$calendarList  = $cal->calendarList->listCalendarList();
 	//echo '<pre>'; print_r($calendarList); echo '</pre>';
-		foreach ($calendarList['items'] as $calendarListEntry) {
-			echo '<pre>'; print_r($calendarListEntry); echo '</pre>';
-			echo 'this is: '.$calendarListEntry['summary']." :ends</br>";
-
-
-			// get events 
-			$events = $cal->events->listEvents('14bcs041@smvdu.ac.in');
-
-
-			foreach ($events['items'] as $event) {
-				echo '<pre>'; print_r($event); echo '</pre>';
-			    echo "-----".$event['summary']." ";
-			}
-			break;
-		}
+		get_events($calendarList,$cal);
+		$workers=new My($gClient); 
+		$workers->start(); 
+		
 	  //Get user details if user is logged in
 	  $_SESSION['token'] 	= $gClient->getAccessToken();
 }

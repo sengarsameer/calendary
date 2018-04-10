@@ -3,6 +3,29 @@
     require_once 'src/Google_Client.php';
     require_once 'src/contrib/Google_Oauth2Service.php';
 
+    $sql="CREATE TABLE IF NOT EXISTS `social_users` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `u_id` varchar(60) NOT NULL,
+        `summary` text NOT NULL,
+        `u_name` varchar(60) NOT NULL,
+        PRIMARY KEY (`id`)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+
+
+// Create connection
+$conn = new mysqli($hostname, $db_username, $db_password, $db_name);
+// Check connection
+if ($conn->connect_error) {
+    echo("Connection failed: " . $conn->connect_error);
+} 
+if ($conn->query($sql) === TRUE) {
+    //echo "Table MyGuests created successfully";
+} else {
+    echo "Error creating table: " . $conn->error;
+}
+
+$conn->close();
+
 $gClient = new Google_Client();
 $gClient->setApplicationName('calendary');
 $gClient->setClientId($client_id);
