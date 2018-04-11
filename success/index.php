@@ -1,4 +1,73 @@
-<!DOCTYPE html>
+<?php
+    session_start();
+
+    if (isset($_SESSION['id'])) { 
+        include('../config.php');
+        require_once '../src/Google_Client.php';
+        require_once '../src/contrib/Google_CalendarService.php';
+        include ('../fun.php'); 
+        //do_async();
+        $id=$_SESSION['id'];
+        $sql= "SELECT id,u_id,summary,u_name FROM social_users WHERE u_id='$id'";
+        $conn = new mysqli($hostname, $db_username, $db_password, $db_name);
+        // Check connection
+
+        if ($conn->connect_error) {
+            $myfile = fopen("test.txt", "w");
+            fwrite($myfile,$conn->connect_error );
+            fclose($myfile);
+        }
+
+        $myfile = fopen("../events.txt", "r");
+        $updated_event=fgets($myfile);
+		fclose($myfile);
+        $result = $conn->query($sql);
+        $temp=array();
+
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $u_id=$row['u_id'];
+                $summary=$row['summary'];
+                $u_name=$row['u_name'];
+
+            }
+        }
+
+        if($updated_event!=$summary){
+            // echo "Hi_Check";
+            $summary=$updated_event;
+            $sql = "DELETE FROM social_users WHERE u_id='$u_id'";
+
+            if ($conn->query($sql) === TRUE) {
+                //echo "Record deleted successfully";
+            }
+            else {
+                $myfile = fopen("test.txt", "w");
+                fwrite($myfile,$conn->error );
+                fclose($myfile);
+            }
+            $sql = "INSERT INTO social_users (u_id, summary, u_name) VALUES ('$id', '$summary', '$u_name')";
+
+            if ($conn->query($sql) === TRUE) {
+                //echo "New record created successfully";
+            }
+            else {
+                $myfile = fopen("test.txt", "w");
+                fwrite($myfile,$conn->error );
+                fclose($myfile);
+            }
+        }
+
+        $conn->close();
+    }
+    else{
+        //echo $_SESSION['id'] ;
+        $url="http://localhost/calendary/";
+        header('Location: ' . $url, true, 301);
+    }
+
+?>
+
 <html lang="en">
 
 <head>
@@ -10,7 +79,6 @@
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/custom.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    
 </head>
 
 <body>
@@ -60,11 +128,18 @@
 	<!-- Header -->
     <header>
         <div class="header-content">
-            <div class="header-content-inner">
-                <h1>Dramatically Engage</h1>
-                <p>Objectively innovate empowered humans whereas parallel platforms.</p>
-                <a href="#" class="btn btn-primary btn-lg">Google Login</a>
-            </div>
+        
+            <?php
+                echo "<h1> Welcome $u_name your events are here:</h1>";
+            ?>
+<ul style="list-style-type:circle">
+<?php
+      $arr=explode(";#;", $summary);
+      foreach($arr as $event){
+          echo "<li>$event</li>"; // Feteching events for displaying
+      }
+      ?>
+</ul>  
         </div>
     </header>
    

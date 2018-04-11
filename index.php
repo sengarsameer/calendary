@@ -1,50 +1,54 @@
 <?php
+
     include ('config.php'); 
     require_once 'src/Google_Client.php';
     require_once 'src/contrib/Google_Oauth2Service.php';
 
+    // Create database
     $sql="CREATE TABLE IF NOT EXISTS `social_users` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `u_id` varchar(60) NOT NULL,
         `summary` text NOT NULL,
         `u_name` varchar(60) NOT NULL,
         PRIMARY KEY (`id`)
-      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 
 
-// Create connection
-$conn = new mysqli($hostname, $db_username, $db_password, $db_name);
-// Check connection
-if ($conn->connect_error) {
-    echo("Connection failed: " . $conn->connect_error);
-} 
-if ($conn->query($sql) === TRUE) {
-    //echo "Table MyGuests created successfully";
-} else {
-    echo "Error creating table: " . $conn->error;
-}
+    // Create connection
+    $conn = new mysqli($hostname, $db_username, $db_password, $db_name);
+    // Check connection
+    if ($conn->connect_error) {
+        echo("Connection failed: " . $conn->connect_error);
+    } 
+    if ($conn->query($sql) === TRUE) {
+        //echo "Table MyGuests created successfully";
+    } 
+    else {
+        echo "Error creating table: " . $conn->error;
+    }
+    //Connection close
+    $conn->close();
 
-$conn->close();
+    $gClient = new Google_Client();
+    $gClient->setApplicationName('calendary');
+    $gClient->setClientId($client_id);
+    $gClient->setClientSecret($client_secret);
+    $gClient->setRedirectUri($redirect_url);
+    $gClient->setDeveloperKey($dev_key);
+    $gClient->setScopes(array('https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.readonly'));
 
-$gClient = new Google_Client();
-$gClient->setApplicationName('calendary');
-$gClient->setClientId($client_id);
-$gClient->setClientSecret($client_secret);
-$gClient->setRedirectUri($redirect_url);
-$gClient->setDeveloperKey($dev_key);
-$gClient->setScopes(array('https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.readonly'));
+    $google_oauthV2 = new Google_Oauth2Service($gClient);
 
-$google_oauthV2 = new Google_Oauth2Service($gClient);
+    if (isset($_REQUEST['reset'])) {
+        unset($_SESSION['token']);
+        $gClient->revokeToken();
+        header('Location: ' . filter_var($redirect_url, FILTER_SANITIZE_URL));
+    }
 
-if (isset($_REQUEST['reset'])) 
-{
-  unset($_SESSION['token']);
-  $gClient->revokeToken();
-  header('Location: ' . filter_var($redirect_url, FILTER_SANITIZE_URL));
-}
-//get google login url
-$authUrl = $gClient->createAuthUrl();
+    //get google login url
+    $authUrl = $gClient->createAuthUrl();
 ?>
+
 <html lang="en">
 
 <head>
